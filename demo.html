@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Demo - ID Card Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f1f5f9;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .demo-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .demo-section h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-icon {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        .demo-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: background 0.2s ease;
+        }
+        .demo-button:hover {
+            background: #2563eb;
+        }
+        .demo-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎯 Preview Functionality Demo</h1>
+            <p>This demo shows you how the preview section works in the ID Card Generator</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>📋 Main Preview Section</h3>
+            <p>When you upload an Excel file and select fields, the main preview section will show:</p>
+            <ul class="feature-list">
+                <li><span class="feature-icon">🔍</span> <strong>Search Box:</strong> Search cards by name or adherent number</li>
+                <li><span class="feature-icon">🏷️</span> <strong>Filter Dropdown:</strong> Filter by "All Cards", "Excel Cards", or "Manual Cards"</li>
+                <li><span class="feature-icon">📄</span> <strong>Pagination:</strong> Navigate through pages (8 cards per page)</li>
+                <li><span class="feature-icon">👆</span> <strong>Clickable Cards:</strong> Click any card to view detailed information</li>
+                <li><span class="feature-icon">🗑️</span> <strong>Delete Buttons:</strong> Remove individual cards with delete buttons or double-click</li>
+                <li><span class="feature-icon">🏷️</span> <strong>Type Indicators:</strong> Each card shows "EXCEL" or "MANUAL" badge</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎨 Interactive Features</h3>
+            <ul class="feature-list">
+                <li><span class="feature-icon">✨</span> <strong>Hover Effects:</strong> Cards scale up and show enhanced shadows on hover</li>
+                <li><span class="feature-icon">👆</span> <strong>Click Animation:</strong> Cards have a satisfying click animation</li>
+                <li><span class="feature-icon">📱</span> <strong>Modal Details:</strong> Clicking a card opens a detailed modal with field values</li>
+                <li><span class="feature-icon">⌨️</span> <strong>Keyboard Support:</strong> Press Escape to close modals</li>
+                <li><span class="feature-icon">📱</span> <strong>Responsive Design:</strong> Works on desktop and mobile devices</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 How to Test the Preview</h3>
+            <ol>
+                <li><strong>Upload Excel File:</strong> Click "Choose Excel File" and select a file with student data</li>
+                <li><strong>Upload Photos:</strong> Click "Choose Student Photos" and select a folder with student images</li>
+                <li><strong>Select Fields:</strong> Check/uncheck the fields you want to display on cards</li>
+                <li><strong>View Preview:</strong> Scroll down to the "Preview" section to see your cards</li>
+                <li><strong>Interact:</strong> Try clicking on cards, using search, filters, and pagination</li>
+                <li><strong>Add Manual Cards:</strong> Click "Add Card Manually" to add individual cards</li>
+                <li><strong>Test Bulk Creation:</strong> Try the bulk card creation feature</li>
+            </ol>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎯 Preview Controls Explained</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <div style="padding: 1rem; background: white; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                    <h4>🔍 Search</h4>
+                    <p>Type to search for cards by student name or adherent number. Search is case-insensitive and updates in real-time.</p>
+                </div>
+                <div style="padding: 1rem; background: white; border-radius: 6px; border-left: 4px solid #10b981;">
+                    <h4>🏷️ Filter</h4>
+                    <p>Choose to view "All Cards", only "Excel Cards", or only "Manual Cards" to focus on specific card types.</p>
+                </div>
+                <div style="padding: 1rem; background: white; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                    <h4>📄 Pagination</h4>
+                    <p>Navigate through pages of cards. Each page shows 8 cards in a responsive grid layout.</p>
+                </div>
+                <div style="padding: 1rem; background: white; border-radius: 6px; border-left: 4px solid #ef4444;">
+                    <h4>🗑️ Delete</h4>
+                    <p>Remove cards using the delete button (🗑️) or by double-clicking on the card. Deleted cards can be restored.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔗 Next Steps</h3>
+            <p>Now that you understand the preview functionality, you can:</p>
+            <div style="text-align: center; margin-top: 1rem;">
+                <button class="demo-button" onclick="window.location.href='index.html'">
+                    🚀 Go to ID Card Generator
+                </button>
+                <button class="demo-button" onclick="window.open('index.html', '_blank')">
+                    📱 Open in New Tab
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

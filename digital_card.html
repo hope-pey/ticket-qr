@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital ID Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .card-container {
+            width: 90%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+            padding-bottom: 2rem;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            padding: 1.5rem;
+        }
+        .card-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: -60px;
+            border: 5px solid white;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .card-body {
+            padding: 1rem 2rem;
+        }
+        .main-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: left;
+            margin-top: 2rem;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-item .label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .detail-item .value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .download-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        .download-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            margin-top: 1rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container" id="cardToDownload">
+        <div class="card-header">
+            <h1 id="cardHeader"></h1>
+        </div>
+        <img id="profilePhoto" src="" alt="Profile Photo" class="profile-photo">
+        <div class="card-body">
+            <h2 id="mainTitle" class="main-title"></h2>
+            <div id="detailsGrid" class="details-grid">
+                <!-- Details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="download-section">
+        <button id="downloadBtn" class="download-btn">Download My ID Card</button>
+        <div id="loading" class="loading">Generating image...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('id');
+            const simpleData = params.get('data') ? JSON.parse(decodeURIComponent(params.get('data'))) : null;
+
+            if (simpleData) {
+                // Display basic info from the simplified data
+                document.getElementById('cardHeader').textContent = simpleData.adherent || 'ID Card';
+                document.getElementById('mainTitle').textContent = simpleData.name || '';
+                
+                // Try to get full data from localStorage if available
+                const fullData = getFullStudentData(studentId);
+                if (fullData) {
+                    displayFullCard(fullData);
+                } else {
+                    displaySimpleCard(simpleData);
+                }
+
+                // Download functionality
+                document.getElementById('downloadBtn').addEventListener('click', downloadCard);
+            } else {
+                document.body.innerHTML = '<h1>No card data found.</h1>';
+            }
+        });
+
+        function getFullStudentData(studentId) {
+            // Retrieve full student data from localStorage
+            const fullData = localStorage.getItem(`student_${studentId}`);
+            if (fullData) {
+                try {
+                    return JSON.parse(fullData);
+                } catch (error) {
+                    console.error('Error parsing student data:', error);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function displaySimpleCard(simpleData) {
+            // Display the simplified card with basic info
+            document.getElementById('cardHeader').textContent = simpleData.adherent || 'ID Card';
+            document.getElementById('mainTitle').textContent = simpleData.name || '';
+            
+            // Hide photo since we don't have it in simple data
+            document.getElementById('profilePhoto').style.display = 'none';
+            
+            // Add basic details
+            const detailsGrid = document.getElementById('detailsGrid');
+            detailsGrid.innerHTML = `
+                <div class="detail-item">
+                    <span class="label">ID</span>
+                    <span class="value">${simpleData.id}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Name</span>
+                    <span class="value">${simpleData.name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Note</span>
+                    <span class="value">Full data not available. This is a simplified view.</span>
+                </div>
+            `;
+        }
+
+        function displayFullCard(fullData) {
+            // Display the full card with all details
+            document.getElementById('cardHeader').textContent = fullData.header || 'ID Card';
+            document.getElementById('mainTitle').textContent = fullData.title || '';
+            
+            const photoEl = document.getElementById('profilePhoto');
+            if (fullData.photo) {
+                photoEl.src = fullData.photo;
+                photoEl.style.display = 'block';
+            } else {
+                photoEl.style.display = 'none';
+            }
+
+            const detailsGrid = document.getElementById('detailsGrid');
+            detailsGrid.innerHTML = '';
+            const fields = fullData.fields || {};
+            
+            for (const [key, value] of Object.entries(fields)) {
+                if(value) {
+                    const item = document.createElement('div');
+                    item.className = 'detail-item';
+                    item.innerHTML = `<span class="label">${key}</span><span class="value">${value}</span>`;
+                    detailsGrid.appendChild(item);
+                }
+            }
+        }
+
+        function downloadCard() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loading = document.getElementById('loading');
+            const cardElement = document.getElementById('cardToDownload');
+
+            downloadBtn.disabled = true;
+            loading.style.display = 'block';
+
+            html2canvas(cardElement, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                width: cardElement.offsetWidth,
+                height: cardElement.offsetHeight
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'my_id_card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                
+                downloadBtn.disabled = false;
+                loading.style.display = 'none';
+            }).catch(error => {
+                console.error('Error generating image:', error);
+                alert('Error generating image. Please try again.');
+                downloadBtn.disabled = false;
+                loading.style.display = 'none';
+            });
+        }
+    </script>
+
+</body>
+</html> 

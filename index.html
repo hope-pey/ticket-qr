@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Generator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="ticket logo.png" alt="Logo" class="main-logo">
+            </div>
+            <div class="title-container">
+                <div class="title-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                    </svg>
+                </div>
+                <h1>ID Card Generator</h1>
+            </div>
+            <div class="header-decoration"></div>
+        </header>
+
+        <main class="app-layout">
+            <aside class="control-panel">
+                <div class="control-section">
+                    <h3 class="control-section-title">1. Upload Files</h3>
+                    <div class="input-group">
+                        <label for="excelFile">Excel File:</label>
+                        <input type="file" id="excelFile" accept=".xlsx, .xls">
+                        <button class="upload-btn" onclick="document.getElementById('excelFile').click()">Choose Excel File</button>
+                        <span id="excelInfo"></span>
+                    </div>
+                    <div class="input-group">
+                        <label for="logoFile">Custom Logo (Optional):</label>
+                        <input type="file" id="logoFile" accept="image/*">
+                        <button class="upload-btn" onclick="document.getElementById('logoFile').click()">Choose Logo</button>
+                        <span id="logoInfo"></span>
+                    </div>
+                    <div class="input-group">
+                        <label for="imageFiles">Student Photos:</label>
+                        <input type="file" id="imageFiles" accept="image/*" multiple webkitdirectory>
+                        <button class="upload-btn" onclick="document.getElementById('imageFiles').click()">Choose Student Photos</button>
+                        <span id="imageInfo"></span>
+                        <div id="uploadedImagesList"></div>
+                    </div>
+                </div>
+
+                <div id="fieldSelection" class="control-section" style="display: none;">
+                    <h3 class="control-section-title">2. Select Fields</h3>
+                    <form id="fieldsForm"></form>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-section-title">3. Layout Settings</h3>
+                    <div class="input-group">
+                        <label for="logoAlign">Logo Alignment</label>
+                        <select id="logoAlign" class="form-control">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="logoSize">Logo Size (px)</label>
+                        <input type="range" id="logoSize" min="20" max="80" value="40" class="form-control">
+                    </div>
+                    <div class="input-group">
+                        <label for="headerField">Header Field</label>
+                        <select id="headerField" class="form-control"></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="mainTitleField">Main Title Field</label>
+                        <select id="mainTitleField" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-section-title">4. QR Code Settings</h3>
+                    <div class="input-group">
+                        <label for="includeQRCode">Include QR Code on Card</label>
+                        <input type="checkbox" id="includeQRCode" checked>
+                    </div>
+                    <div class="input-group">
+                        <label for="qrCodeSize">QR Code Size (px)</label>
+                        <input type="range" id="qrCodeSize" min="20" max="80" value="50" class="form-control">
+                    </div>
+                    <div class="input-group">
+                        <label for="qrCodePosition">QR Code Position</label>
+                        <select id="qrCodePosition" class="form-control">
+                            <option value="bottom-right">Bottom Right</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="top-right">Top Right</option>
+                            <option value="top-left">Top Left</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 class="control-section-title">5. Card Settings</h3>
+                    <div class="dimension-inputs">
+                        <div class="input-group">
+                            <label for="cardWidth">Width (px)</label>
+                            <input type="number" id="cardWidth" value="325" min="100">
+                        </div>
+                        <div class="input-group">
+                            <label for="cardHeight">Height (px)</label>
+                            <input type="number" id="cardHeight" value="240" min="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section action-buttons">
+                    <h3 class="control-section-title">6. Generate & Export</h3>
+                    <button id="generateBtn" class="generate-btn" disabled>Generate PDF</button>
+                    <button id="addCardBtn" class="add-card-btn">Add Card Manually</button>
+                    <div class="export-controls">
+                        <button id="exportExcelBtn" class="btn btn-secondary">Export All Cards to Excel</button>
+                        <div class="image-export-group">
+                            <button id="exportImagesBtn" class="btn btn-secondary">Export Images as .zip</button>
+                            <button id="generateQrCodesBtn" class="btn btn-secondary">Generate QR Codes</button>
+                            <button id="testQrCodeBtn" class="btn btn-secondary" onclick="generateTestQRCode()">Test QR Code</button>
+                            <div class="input-group">
+                                <label for="imageNameField">Name images by:</label>
+                                <select id="imageNameField"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="restoreBtn" class="restore-btn" style="display: none;">Restore Deleted</button>
+                    <button id="emailCardsBtn" class="export-btn" style="margin-top: 10px;">Email Digital Cards</button>
+                </div>
+            </aside>
+
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <h2>Live Preview</h2>
+                    <div id="cardCount" class="file-info"></div>
+                </div>
+                <div id="preview" class="preview-container"></div>
+                <div id="manualCardsSection" style="display: none;">
+                    <h2>Manually Added Cards</h2>
+                    <div id="manualCardsPreview" class="preview-container"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>- Created with ❤️ -</p>
+        </footer>
+    </div>
+
+    <div id="emailConfigModal" class="add-card-modal">
+        <div class="add-card-modal-content" style="grid-template-columns: 1fr; max-width: 500px;">
+            <div class="add-card-form-container">
+                <h2 class="form-title">EmailJS Configuration</h2>
+                <p class="form-text">
+                    Enter your EmailJS credentials to send digital cards. This is a one-time setup. 
+                    You can get these from your EmailJS account dashboard.
+                    <a href="https://www.emailjs.com/" target="_blank">Learn more</a>.
+                </p>
+                <div class="form-group">
+                    <label for="emailServiceId">Service ID</label>
+                    <input type="text" id="emailServiceId" class="form-control" placeholder="Your EmailJS Service ID">
+                </div>
+                <div class="form-group">
+                    <label for="emailTemplateId">Template ID</label>
+                    <input type="text" id="emailTemplateId" class="form-control" placeholder="Your EmailJS Template ID">
+                </div>
+                <div class="form-group">
+                    <label for="emailUserId">User ID (Public Key)</label>
+                    <input type="text" id="emailUserId" class="form-control" placeholder="Your EmailJS User ID / Public Key">
+                </div>
+                 <div class="form-group">
+                    <label for="emailColumn">Email Field in Excel</label>
+                    <select id="emailColumn" class="form-control"></select>
+                </div>
+                <div class="form-actions">
+                    <button id="saveEmailConfigBtn" class="btn btn-primary">Save and Send</button>
+                    <button id="cancelEmailConfigBtn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
